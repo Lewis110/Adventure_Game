@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Scanner;
 
 public class Map implements ScreenLayer {
-    protected Character map[][] = new Character[15][41];
+    protected Character map[][] = new Character[210][90];
     Scanner scanner = new Scanner(System.in);
 
     public Map() {
@@ -16,7 +16,7 @@ public class Map implements ScreenLayer {
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
         while ((st = br.readLine()) != null) {
-            for (int j = 0; j < 41; j++) {
+            for (int j = 0; j < 42; j++) {
                 this.map[rowNum][j] = st.charAt(j);
             }
             rowNum++;
@@ -28,7 +28,7 @@ public class Map implements ScreenLayer {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter("DemoMapSave.txt"));
             for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 41; j++) {
+                for (int j = 0; j < 42; j++) {
                     writer.write(String.valueOf(this.map[i][j]));
                 }
                 writer.write("\n");
@@ -51,4 +51,6 @@ public class Map implements ScreenLayer {
         return layer;
     }
 }
+
+
 

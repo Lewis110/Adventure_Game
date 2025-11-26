@@ -1,25 +1,30 @@
 package org.example;
 
 import java.io.IOException;
+import com.googlecode.lanterna.input.KeyStroke; //for real-time input into computer without prompt
+import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.screen.Screen;
 
 public class MovePlayer {
-    private Character[][] layeredMap;
-    public MovePlayer(Character[][] layeredMap) {
-        this.layeredMap = layeredMap;
-    }
-    public Point searchForCharacter() {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 41; j++) {
-                if (this.layeredMap[i][j] == '@') {
-                    return new Point(i, j);
-                }
-            }
-        }
-        return null;
+    private Screen screen;
+    private Player player;
+    private Map map;
+
+    public MovePlayer(Screen screen, Player player, Map map) {
+        this.map = map;
+        this.screen = screen;
+        this.player = player;
     }
 
-    public void alterCoordinates(int x, int y, char key) {
-        this.layeredMap[x][y] = key;
+    public boolean isPositionWalkable (Point point) {
+        if (point.x < 0 || point.x > 15 || point.y < 0 || point.y > 41)
+            return false;
+
+        if (map.map[point.x][point.y] != '.'){
+            return false;
+        }
+
+        return true;
     }
 
     // Instant input method without needing Enter
@@ -28,14 +33,11 @@ public class MovePlayer {
             System.out.print("Enter move (WASD): ");
 
             // Read single character without waiting for Enter
-            int input = System.in.read();
+            KeyStroke input = screen.readInput();
 
-            // Clear the input buffer of any remaining characters (like newline)
-            while (System.in.available() > 0) {
-                System.in.read();
+            if (input.getKeyType() == KeyType.Character) {
+                return convertCharToMove(input.getCharacter());
             }
-
-            return convertCharToMove((char) input);
 
         } catch (IOException e) {
             System.out.println("Input error!");
@@ -56,7 +58,7 @@ public class MovePlayer {
         };
     }
 
-    public Character[][] changeMap() {
+    public void changeMap() {
         // Use instant input instead of scanner
         MOVES userMove = getInstantInput();
 
@@ -67,33 +69,29 @@ public class MovePlayer {
 
         if (userMove == null) {
             System.out.println("Invalid move! Use W, A, S, or D.");
-            return null;
+            return;
         }
 
-        Point point = this.searchForCharacter();
-        if (point == null) {
-            System.out.println("Player character (@) not found on map!");
-            return null;
-        }
-
-        // Clear current player position
-        this.alterCoordinates(point.x, point.y, '.');
+        Point point = new Point(player.getX(), player.getY()); //this lets us check if position we want to move to is valid
 
         // Calculate new position based on move
-        if (userMove == MOVES.UP) {
+        if (userMove == MOVES.LEFT) {
             point.x--; // moves up 1 row
-        } else if (userMove == MOVES.DOWN) {
-            point.x++; // moves down 1 row
-        } else if (userMove == MOVES.LEFT) {
-            point.y--; // moves left 1 column
         } else if (userMove == MOVES.RIGHT) {
+            point.x++; // moves down 1 row
+        } else if (userMove == MOVES.UP) {
+            point.y--; // moves left 1 column
+        } else if (userMove == MOVES.DOWN) {
             point.y++; // moves right 1 column
         }
 
-        // Place player at new position
-        this.alterCoordinates(point.x, point.y, '@');
+        if (isPositionWalkable(point))
+        {
+            player.coordinates = point;
+        }
 
-        return this.layeredMap;
+
+        return;
     }
 
     public void clearScreen() {

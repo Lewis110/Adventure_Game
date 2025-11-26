@@ -1,13 +1,18 @@
 package org.example;
 
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.screen.Screen;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-
-    public Game (){
+    Screen screen;
+    public Game (Screen screen) {
+        this.screen = screen;
     }
 
     public void gameLoop(Map map, Player player, LoadScreen loadScreen) {
@@ -18,10 +23,13 @@ public class Game {
             System.out.println(e.getMessage()); //IOException is a CLASS, and e is an instance of the class
             System.out.println("Error loading Map");
         }
-        MovePlayer movePlayer = new MovePlayer(map.map);
+        MovePlayer movePlayer = new MovePlayer(screen, player, map);
         while(true){
             //map.clearScreen(); doesnt work
 
+            screen.doResizeIfNecessary();
+
+            movePlayer.changeMap();
             Character[][] mapLayer = map.getLayer();
             Character[][] playerLayer = player.getLayer();
             Character[][] loadLayer = loadScreen.getLayer();
@@ -35,7 +43,7 @@ public class Game {
             //}
             Character[][] buffer = this.compositeLayers(combinedLayers);
             this.printScreenBuffer(buffer);
-            buffer = movePlayer.changeMap();
+
         }
     }
 
@@ -60,11 +68,20 @@ public class Game {
     }
 
     public void printScreenBuffer(Character[][] buffer) {
-        for (Character[] row : buffer) {
-            for (Character column : row) {
-                System.out.print(column);
+        TextGraphics textGraphics = screen.newTextGraphics();
+
+        screen.clear();
+        for (int x = 0; x < buffer.length; x++) {
+            Character[] row = buffer[x];
+            for (int y = 0; y < row.length; y++) {
+                textGraphics.putString(x, y, row[y].toString());
             }
-            System.out.println();
+
+        }
+        try {
+            screen.refresh();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }

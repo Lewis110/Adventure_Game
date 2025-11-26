@@ -10,7 +10,7 @@ enum MOVES {
 
 
 public class Player implements ScreenLayer{
-    private Point coordinates = new Point(7, 20);
+    public Point coordinates = new Point(7, 20);
     public static final Character ID = '@';
 
     public Player() {
@@ -41,5 +41,12 @@ public class Player implements ScreenLayer{
         Character[][] layer = new Character[15][41];
         layer[coordinates.x][coordinates.y] = ID;
         return layer;
+    }
+    public int getX() {
+        return this.coordinates.x;
+    }
+
+    public int getY() {
+        return this.coordinates.y;
     }
 }
