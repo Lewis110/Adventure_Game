@@ -28,12 +28,7 @@ public class Game {
             //map.clearScreen(); doesnt work
 
             screen.doResizeIfNecessary();
-            /*screen.clear();
-            try {
-                screen.refresh();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }*/
+
             movePlayer.changeMap();
             Character[][] mapLayer = map.getLayer();
             Character[][] playerLayer = player.getLayer();
@@ -61,7 +56,7 @@ public class Game {
         Character[][] buffer = new Character[15][41];
         for (Character[][] layer : layers) { //loops through layers List
             for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 42; j++) {
+                for (int j = 0; j < 41; j++) {
                     if (layer[i][j] == null) {
                         continue;
                     }
